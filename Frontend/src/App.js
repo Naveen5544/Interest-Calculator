@@ -5,6 +5,20 @@ import {
   FaPercentage, FaCalendarAlt, FaRegClock, FaSync, FaTrashAlt
 } from 'react-icons/fa';
 
+/** Modal component */
+const Modal = ({ show, onClose, children, theme }) => {
+  if (!show) return null;
+
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className={`modal-content ${theme}`} onClick={(e) => e.stopPropagation()}>
+        <button className="modal-close" onClick={onClose}>×</button>
+        {children}
+      </div>
+    </div>
+  );
+};
+
 function App() {
   const [theme, setTheme] = useState('light');
   const [language, setLanguage] = useState('en');
@@ -22,6 +36,8 @@ function App() {
   const [emiRate, setEmiRate] = useState('');
   const [tenureMonths, setTenureMonths] = useState('');
   const [emiResult, setEmiResult] = useState(null);
+
+  const [showModal, setShowModal] = useState(false);
 
   const labels = {
     en: {
@@ -94,13 +110,28 @@ function App() {
     }
 
     const p = parseFloat(principal);
-    let r = parseFloat(rate);
+    const r = parseFloat(rate);
     const start = new Date(startDate);
     const end = new Date(endDate);
-    const T = (end - start) / (1000 * 60 * 60 * 24 * 365);
 
-    if (ratePeriod === 'per month') r *= 12;
-    else if (ratePeriod === 'per day') r *= 365;
+    const days = (end - start) / (1000 * 60 * 60 * 24);
+    if (days < 0) {
+      alert('End date must be after start date!');
+      return;
+    }
+
+    let T;
+
+    if (ratePeriod === 'per year') {
+      T = days / 365;
+    } else if (ratePeriod === 'per month') {
+      T = days / 30;
+    } else if (ratePeriod === 'per day') {
+      T = days;
+    } else {
+      alert('Invalid rate period!');
+      return;
+    }
 
     let interestAmount = 0;
     let finalAmount = 0;
@@ -118,6 +149,8 @@ function App() {
       interestAmount: interestAmount.toFixed(2),
       finalAmount: finalAmount.toFixed(2)
     });
+
+    setShowModal(true);
   };
 
   const clearInterest = () => {
@@ -142,6 +175,7 @@ function App() {
 
     const emi = (P * R * Math.pow(1 + R, N)) / (Math.pow(1 + R, N) - 1);
     setEmiResult(emi.toFixed(2));
+    setShowModal(true);
   };
 
   const clearEMI = () => {
@@ -240,6 +274,23 @@ function App() {
           )}
         </>
       )}
+
+      <Modal show={showModal} onClose={() => setShowModal(false)} theme={theme}>
+        {calculatorType === 'interest' && result && (
+          <>
+            <h2>{L.interestCalculator}</h2>
+            <p>{L.timePeriod}: {result.timePeriod}</p>
+            <p>{L.interestAmount}: {result.interestAmount}</p>
+            <p>{L.finalAmount}: {result.finalAmount}</p>
+          </>
+        )}
+        {calculatorType === 'emi' && emiResult && (
+          <>
+            <h2>{L.emiCalculator}</h2>
+            <p>{L.emiResult}: {emiResult}</p>
+          </>
+        )}
+      </Modal>
     </div>
   );
 }
