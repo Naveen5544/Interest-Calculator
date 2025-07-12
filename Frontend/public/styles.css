@@ -1,0 +1,53 @@
+:root {
+  --bg-color: #ffffff;
+  --text-color: #000000;
+  --button-bg: #007bff;
+  --button-text: #ffffff;
+  --error-color: #ff0000;
+}
+
+body, html, .app {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+button {
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  border: none;
+  padding: 10px 15px;
+  margin: 5px;
+  cursor: pointer;
+}
+
+input, select {
+  padding: 5px;
+  margin: 5px;
+  width: 200px;
+}
+
+.form {
+  margin-top: 20px;
+}
+
+.error {
+  color: var(--error-color);
+  margin-top: 10px;
+}
+
+.result {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+
+/* Dark mode */
+.app.dark {
+  --bg-color: #121212;
+  --text-color: #f0f0f0;
+  --button-bg: #4444dd;
+  --button-text: #ffffff;
+  --error-color: #ff6666;
+}
